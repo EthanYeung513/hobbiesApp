@@ -7,7 +7,12 @@
             >
                 Main Page
             </router-link>
-            |
+            <router-link
+                class=""
+                :to="{name: 'Sign Up'}"
+            >
+                Sign Up
+            </router-link>
             <router-link
                 class=""
                 :to="{name: 'Other Page'}"
