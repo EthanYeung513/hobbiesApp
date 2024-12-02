@@ -10,10 +10,16 @@ class PageView(models.Model):
     def __str__(self):
         return f"Page view count: {self.count}"
 
-
-class Hobby(models.Model):
-    hobby_name = models.CharField(max_length=128)
-
 class AppUser(AbstractUser):
     date_of_birth = models.DateField()
-    hobbies = models.ManyToManyField(Hobby)
+
+class Hobby(models.Model):
+    appUser = models.ManyToManyField(AppUser, through="AppUserDoesHobby")   
+    hobby_name = models.CharField(max_length=128)
+
+class AppUserDoesHobby(models.Model):
+    hobby_name = models.CharField(max_length=128)
+    appUser = models.ForeignKey(AppUser, on_delete=models.CASCADE)
+    hobby = models.ForeignKey(Hobby, on_delete=models.CASCADE)
+
+
