@@ -2,11 +2,16 @@
     <div class="h1">
       {{ title }}
     </div>
-    <form @submit.prevent="handleSubmit" novalidate>
+    <form novalidate>
       <div>
         <label for="name">Name</label>
         <input id="name" type="text" v-model="name" required/>
       </div>
+      <div>
+        <label for="date_of_birth">Date of Birth</label>
+        <input id="date_of_birth" type="date" v-model="date_of_birth" required /> 
+      </div>
+      
 
       <div>
         <label for="email">Email</label>
@@ -19,9 +24,7 @@
 
       <button type="submit" >Sign Up</button>
 
-      <div v-if="apiError" class="api-error">
-        <p>{{apiError}}</p>
-      </div>
+  
     </form>
   </template>
   
@@ -32,6 +35,12 @@
           data() {
               return {
                   title: "Sign Up",
+                  name: '',
+                  date_of_birth: '',
+                  email: '',
+                  password: '',
+
+
               }
           }
       })

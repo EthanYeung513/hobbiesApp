@@ -15,8 +15,6 @@ class Hobby(models.Model):
     hobby_name = models.CharField(max_length=128)
 
 class AppUser(AbstractUser):
-    user_name = models.CharField(max_length=128)
-    email = models.EmailField()
     date_of_birth = models.DateField()
     hobbies = models.ManyToManyField(Hobby)
 

@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import render
 
-from hobbiesApp.api.forms import AppUserSignUpForm
+from api.forms import AppUserSignUpForm
 from .models import AppUser
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
