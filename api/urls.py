@@ -19,7 +19,10 @@ from django.urls import include, path
 from django.http import HttpResponse
 
 from .views import main_spa
+from .views import signup
 
 urlpatterns = [
-    path('', main_spa),
+    path('signup/', signup, name='signup'),
+    path('', main_spa)
+    
 ]
