@@ -12,6 +12,7 @@ class PageView(models.Model):
 
 class AppUser(AbstractUser):
     date_of_birth = models.DateField()
+    REQUIRED_FIELDS = ['date_of_birth'] #for superuser prompt
 
 class Hobby(models.Model):
     appUser = models.ManyToManyField(AppUser, through="AppUserHobby")   
