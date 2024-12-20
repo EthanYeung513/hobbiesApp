@@ -26,60 +26,33 @@ def signup(request):
 
 
 def similar_users(request):
-    def count_same_hobbies(user1, user2, freq, seen_pairs):
+    def count_same_hobbies(user_to_compare, current_user, similar_user_count):
         count = 0
         #loop through countign common hobbies
-        for h1 in user1["hobbies"]:
-            for h2 in user2["hobbies"]:
-                if h1 == h2:
+        for utc_hobby in user_to_compare["hobbies"]:
+            for cu_hobby in current_user["hobbies"]:
+                if utc_hobby == cu_hobby:
                     count +=1 
+        similar_user_count[count] = user_to_compare
+        return similar_user_count
 
-        # Create a frozenset to represent the user pair (unordered)
-        pair = frozenset([user1["username"], user2["username"]])
-        
-        # Check if the pair has already been processed
-        if pair not in seen_pairs:
-            # If not, add to the seen pairs set
-            seen_pairs.add(pair)
-            
-            # Get the existing list of user pairs for the given count or create an empty list
-            freq_value = freq.get(count, [])
-            
-            # Add the pair to the list
-            freq_value.append([user1, user2])
-            
-            # Update the dictionary with the new pair list
-            freq[count] = freq_value
-        
-        return freq, seen_pairs
-    
-    freq = {}
-    seen_pairs = set()
+    similar_user_count = {}
+    req_user = request.user
+    print("User logged in:", req_user)
+
     if request.method == "GET":
         #get all users
         users = AppUser.objects.all()
+        current_user = AppUser.objects.filter(username=req_user)
         #sort them according to similar hobbies 
         for i in range(len(users)):
-            a = users[i]
-            for u in users:
-                if a != u:
-                    freq, seen_pairs = count_same_hobbies(a, u, freq, seen_pairs)
-        
-        # res_array - [(7, ['e', 'j']), (3, ['a', 'b']), (0, [])]
-        # res_array[0] - (7, ['e', 'j'])
-        # res_array[0][0] - 7
-        
-        # we don't need to know specifically how many hobbies are shared
-        # so just return a list of users in order
-        res = OrderedDict()
-        res = sorted(freq.items(), reverse=True)
+            user_to_compare = users[i]
+            if user_to_compare != current_user:
+                similar_user_count = count_same_hobbies(user_to_compare, current_user, similar_user_count)
+        #similar_user_count should look like {3: "David", 7: "Alice", 0: "Charlie"}
 
-        # print(res)
-        # print()
-        # print(res[0]) # (3, [['Alice', 'David'], ['Alice', 'Hank'], ['Bob', 'Hank'], ['David', 'Frank'], ['David', 'Hank']])
-        # print(res[0][1]) # [['Alice', 'David'], ['Alice', 'Hank'], ['Bob', 'Hank'], ['David', 'Frank'], ['David', 'Hank']]
-        # print(res[0][1][2]) # ['Bob', 'Hank']
-        
-        
-        print(freq)
-    return JsonResponse(json.dumps(freq), safe=False)
+        res = OrderedDict()
+        res = sorted(similar_user_count.items(), reverse=True) #{3: "David", 7: "Alice", 0: "Charlie"}
+        #as a json it will look like [(3, "David"), (7, "Alice"), (0, "Charlie")]
+        print(similar_user_count)
+    return JsonResponse(json.dumps(similar_user_count), safe=False)
