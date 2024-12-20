@@ -1,8 +1,9 @@
+from collections import OrderedDict
 import json
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import render,redirect
 
-from api.models import AppUser
+from api.models import AppUser, Hobby
 from .forms import AppUserSignUpForm
 
 def main_spa(request: HttpRequest) -> HttpResponse:
@@ -34,7 +35,7 @@ def similar_users(request):
                     count +=1 
 
         # Create a frozenset to represent the user pair (unordered)
-        pair = frozenset([user1["name"], user2["name"]])
+        pair = frozenset([user1["username"], user2["username"]])
         
         # Check if the pair has already been processed
         if pair not in seen_pairs:
@@ -63,7 +64,22 @@ def similar_users(request):
             for u in users:
                 if a != u:
                     freq, seen_pairs = count_same_hobbies(a, u, freq, seen_pairs)
-        #res = sorted(freq.items(), reverse=True)
+        
+        # res_array - [(7, ['e', 'j']), (3, ['a', 'b']), (0, [])]
+        # res_array[0] - (7, ['e', 'j'])
+        # res_array[0][0] - 7
+        
+        # we don't need to know specifically how many hobbies are shared
+        # so just return a list of users in order
+        res = OrderedDict()
+        res = sorted(freq.items(), reverse=True)
 
+        # print(res)
+        # print()
+        # print(res[0]) # (3, [['Alice', 'David'], ['Alice', 'Hank'], ['Bob', 'Hank'], ['David', 'Frank'], ['David', 'Hank']])
+        # print(res[0][1]) # [['Alice', 'David'], ['Alice', 'Hank'], ['Bob', 'Hank'], ['David', 'Frank'], ['David', 'Hank']]
+        # print(res[0][1][2]) # ['Bob', 'Hank']
+        
+        
         print(freq)
-    return JsonResponse(json.dumps(freq))
+    return JsonResponse(json.dumps(freq), safe=False)

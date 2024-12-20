@@ -25,6 +25,6 @@ from . import views
 urlpatterns = [
     path('signup/', signup, name='signup'),
     path('', main_spa),
-    path('similar-users/', views.similar_users, name='signup'),
+    path('similar-users/', views.similar_users, name='similar-users'),
     
 ]

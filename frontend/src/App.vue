@@ -16,9 +16,9 @@
             </router-link>
             <router-link
                 class=""
-                :to="{name: 'Hobbies Comparison'}"
+                :to="{name: 'Similar Users'}"
             >
-                Hobbies Comparison
+                Similar Users
             </router-link>
         </div>
         <RouterView class="flex-shrink-0" />
