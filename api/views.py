@@ -26,14 +26,19 @@ def signup(request):
 
 
 def similar_users(request):
-    def count_same_hobbies(user_to_compare, current_user, similar_user_count):
+    def return_users_with_hobby_count(user_to_compare, current_user, similar_user_count):
         count = 0
         #loop through countign common hobbies
         for utc_hobby in user_to_compare["hobbies"]:
             for cu_hobby in current_user["hobbies"]:
                 if utc_hobby == cu_hobby:
                     count +=1 
-        similar_user_count[count] = user_to_compare
+       
+        if count not in similar_user_count:
+            similar_user_count[count] = [user_to_compare] # {3: ["Alice"]}
+        else:
+            similar_user_count[count].append(user_to_compare) # {3: ["Alice", "Bob"]}
+            
         return similar_user_count
 
     similar_user_count = {}
@@ -48,7 +53,7 @@ def similar_users(request):
         for i in range(len(users)):
             user_to_compare = users[i]
             if user_to_compare != current_user:
-                similar_user_count = count_same_hobbies(user_to_compare, current_user, similar_user_count)
+                similar_user_count = return_users_with_hobby_count(user_to_compare, current_user, similar_user_count)
         #similar_user_count should look like {3: "David", 7: "Alice", 0: "Charlie"}
 
         res = OrderedDict()
