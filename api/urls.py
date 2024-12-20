@@ -20,9 +20,11 @@ from django.http import HttpResponse
 
 from .views import main_spa
 from .views import signup
+from . import views
 
 urlpatterns = [
     path('signup/', signup, name='signup'),
-    path('', main_spa)
+    path('', main_spa),
+    path('similar-users/', views.similar_users, name='signup'),
     
 ]
