@@ -63,19 +63,19 @@ class SimilarUsersTestCase(TestCase):
         response_data = json.loads(response.content)
 
         # Expected pairs and counts
-        expected_output = {
-            "2": [
+        expected_output = [
+            {"2": [
                 {"username": "Bob", "hobbies": ["cycling", "gaming", "movies"]},
-                {"username": "Eve", "hobbies": ["reading", "movies", "cooking"]},
-            ],
-            "1": [
+                {"username": "Eve", "hobbies": ["reading", "movies", "cooking"]}
+            ]},
+            {"1": [
                 {"username": "Charlie", "hobbies": ["reading", "traveling"]},
-                {"username": "David", "hobbies": ["movies", "cooking", "gaming"]},
-            ],
-        }
+                {"username": "David", "hobbies": ["movies", "cooking", "gaming"]}
+            ]
+        }]
 
         # Compare expected and actual output
-        self.assertEqual(response_data, expected_output)
+        self.assertEqual(response_data, json.dumps(expected_output))
 
     def test_similar_users_returns_error_when_not_logged_in(self):
         """
@@ -113,4 +113,4 @@ class SimilarUsersTestCase(TestCase):
         # Load response
         response_data = json.loads(response.content)
         # Expecting empty dictionary
-        self.assertEqual(response_data, {})  
+        self.assertEqual(response_data, '[]')  

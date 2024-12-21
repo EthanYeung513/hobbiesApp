@@ -61,25 +61,25 @@ def similar_users(request):
     print("User logged in:", req_user)
 
     if request.method == "GET":
-        #get QerySet object of current user
+        # get QerySet object of current user
         try:
             current_user = AppUser.objects.get(username=req_user)
         except AppUser.DoesNotExist:
             return JsonResponse({"error": "Logged-in user not found"}, status=404)
 
-        #get all users except current user
+        # get all users except current user
         users = AppUser.objects.exclude(username=req_user.username)
 
-        #sort them according to similar hobbies 
+        # sort them according to similar hobbies 
         for user_to_compare in users:
             similar_user_count = return_users_with_hobby_count(user_to_compare, current_user, similar_user_count)
 
-        sorted_similar_user_count = OrderedDict(sorted(similar_user_count.items(), reverse=True))
-        # resulting json looks like: 
-        # OrderedDict([(2, [{'username': 'Bob', 'hobbies': ['cycling', 'gaming', 'movies']}, 
-        #                   {'username': 'Eve', 'hobbies': ['reading', 'movies', 'cooking']}]), 
-        #              (1, [{'username': 'Charlie', 'hobbies': ['reading', 'traveling']}, 
-        #                   {'username': 'David', 'hobbies': ['movies', 'cooking', 'gaming']}])])
-        print("result dict:", sorted_similar_user_count)
-        
-    return JsonResponse(sorted_similar_user_count, safe=False)
+        # Sort the resulting dict and save it to a list
+        sorted_similar_user_count = [{k: v} for k, v in sorted(similar_user_count.items(), reverse=True)]
+        # Result looks like:
+        # [{"2": [{"username": "Bob", "hobbies": ["cycling", "gaming", "movies"]}, 
+        #         {"username": "Eve", "hobbies": ["reading", "movies", "cooking"]}]}, 
+        # {"1": [{"username": "Charlie", "hobbies": ["reading", "traveling"]},
+        #        {"username": "David", "hobbies": ["movies", "cooking", "gaming"]}]}]
+        print(sorted_similar_user_count)
+    return JsonResponse(json.dumps(sorted_similar_user_count), safe=False)
