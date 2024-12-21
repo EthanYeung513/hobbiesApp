@@ -29,7 +29,8 @@ def signup(request):
 def similar_users(request):
     def return_users_with_hobby_count(user_to_compare, current_user, similar_user_count):
         count = 0
-        #loop through countign common hobbies
+
+        #loop through counting common hobbies
         user_to_compare_hobbies = user_to_compare.hobbies.all()
         current_user_hobbies = current_user.hobbies.all()   
 
@@ -72,9 +73,13 @@ def similar_users(request):
         #sort them according to similar hobbies 
         for user_to_compare in users:
             similar_user_count = return_users_with_hobby_count(user_to_compare, current_user, similar_user_count)
-        #similar_user_count should look like {3: "David", 7: "Alice", 0: "Charlie"}
 
-        res = OrderedDict(sorted(similar_user_count.items(), reverse=True)) #{3: "David", 7: "Alice", 0: "Charlie"}
-        #as a json it will look like [(3, "David"), (7, "Alice"), (0, "Charlie")]
-        print("result dict:", similar_user_count)
-    return JsonResponse(similar_user_count, safe=False)
+        sorted_similar_user_count = OrderedDict(sorted(similar_user_count.items(), reverse=True))
+        # resulting json looks like: 
+        # OrderedDict([(2, [{'username': 'Bob', 'hobbies': ['cycling', 'gaming', 'movies']}, 
+        #                   {'username': 'Eve', 'hobbies': ['reading', 'movies', 'cooking']}]), 
+        #              (1, [{'username': 'Charlie', 'hobbies': ['reading', 'traveling']}, 
+        #                   {'username': 'David', 'hobbies': ['movies', 'cooking', 'gaming']}])])
+        print("result dict:", sorted_similar_user_count)
+        
+    return JsonResponse(sorted_similar_user_count, safe=False)
