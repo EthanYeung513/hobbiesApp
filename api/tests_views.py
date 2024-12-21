@@ -48,7 +48,7 @@ class SimilarUsersTestCase(TestCase):
         # Store Alice for login
         self.alice = alice
 
-    def test_similar_users_returns_correct_users_and_num_of_hobbies(self):
+    def test_similar_users_returns_correct_users_and_num_of_hobbies_when_logged_in(self):
         """
         Test that the similar_users function returns correct frequency of common hobbies.
         """
@@ -77,48 +77,40 @@ class SimilarUsersTestCase(TestCase):
         # Compare expected and actual output
         self.assertEqual(response_data, expected_output)
 
-    # def test_no_duplicates_in_pairs(self):
-    #     """
-    #     Test that no duplicate pairs (e.g., Alice-Bob and Bob-Alice) are returned.
-    #     """
-    #     response = self.client.get(reverse('similar-users/'))
-    #     self.assertEqual(response.status_code, 200)
+    def test_similar_users_returns_error_when_not_logged_in(self):
+        """
+        Test that the similar_users function returns correct frequency of common hobbies.
+        """
+        # Ensure the client is not logged in
+        self.client.logout()
 
-    #     # Load response
-    #     response_data = json.loads(json.loads(response.content))
+        # Call the view
+        response = self.client.get(reverse('similar-users'))
+        # Check for redirect due to @login_required
+        # Default behavior is a redirect to login page
+        self.assertEqual(response.status_code, 302)
 
-    #     # Collect all user pairs into a set for validation
-    #     seen_pairs = set()
-    #     for count, pairs in response_data.items():
-    #         for pair in pairs:
-    #             # Create a frozenset of user names to ensure uniqueness
-    #             user_pair = frozenset([pair[0]["name"], pair[1]["name"]])
-    #             self.assertNotIn(user_pair, seen_pairs)  # Ensure no duplicates
-    #             seen_pairs.add(user_pair)
+        # Ensure it redirects to the login URL
+        self.assertIn('/accounts/login/', response.url)
 
-    # def test_empty_user_list(self):
-    #     """
-    #     Test that the function handles an empty user list correctly.
-    #     """
-    #     AppUser.objects.all().delete()  # Clear all users
+    def test_similar_users_returns_empty_user_list_when_only_one_user_registered(self):
+        """
+        Test that the similar_users function returns an empty user list correctly when only one user exists.
+        """
+        # Log in as Alice
+        self.client.force_login(self.alice)
 
-    #     response = self.client.get(reverse('similar-users/'))
-    #     self.assertEqual(response.status_code, 200)
+        # Call the view
+        response = self.client.get(reverse('similar-users'))
+        self.assertEqual(response.status_code, 200)
 
-    #     # Load response
-    #     response_data = json.loads(json.loads(response.content))
-    #     self.assertEqual(response_data, {})  # Expecting empty dictionary
+        # Delete everyone except Alice
+        AppUser.objects.exclude(username="Alice").delete()
 
-    # def test_single_user(self):
-    #     """
-    #     Test that the function handles a single user correctly (no pairs).
-    #     """
-    #     AppUser.objects.all().delete()
-    #     AppUser.objects.create(name="Alice", hobbies=["reading", "cycling", "movies"])
+        response = self.client.get(reverse('similar-users'))
+        self.assertEqual(response.status_code, 200)
 
-    #     response = self.client.get(reverse('similar-users/'))
-    #     self.assertEqual(response.status_code, 200)
-
-    #     # Load response
-    #     response_data = json.loads(json.loads(response.content))
-    #     self.assertEqual(response_data, {})  # No pairs to compare
+        # Load response
+        response_data = json.loads(response.content)
+        # Expecting empty dictionary
+        self.assertEqual(response_data, {})  
